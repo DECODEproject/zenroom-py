@@ -20,10 +20,10 @@ def execute(script, keys=None, data=None, conf=None, verbosity=1):
     the underlying Zenroom tool does not require.
 
     Args:
-        script (str): Required string containing script which Zenroom will execute
-        keys (str): Optional string containing keys which Zenroom will use
-        data (str): Optional string containing data upon which Zenroom will operate
-        conf (str): Optional string containing conf data for Zenroom
+        script (str): Required byte string containing script which Zenroom will execute
+        keys (str): Optional byte string containing keys which Zenroom will use
+        data (str): Optional byte string containing data upon which Zenroom will operate
+        conf (str): Optional byte string containing conf data for Zenroom
         verbosity (int): Optional int which controls Zenroom's log verbosity ranging from 1 (least verbose) up to 3 (most verbose)
 
     Returns:
