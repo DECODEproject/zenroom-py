@@ -13,4 +13,5 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/thingful/zenroom-py",
     packages=setuptools.find_packages(),
+    package_data={"zenroom": ["_zenroom.so"]},
 )
