@@ -14,4 +14,6 @@ setuptools.setup(
     url="https://github.com/thingful/zenroom-py",
     packages=setuptools.find_packages(),
     package_data={"zenroom": ["_zenroom.so"]},
+    setup_requires=["pytest-runner"],
+    tests_require=["pytest"]
 )
