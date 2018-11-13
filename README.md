@@ -14,3 +14,16 @@ only been tested under Python 3.
 Zenroom itself does have good cross platform functionality, so if you are
 interested in finding out more about the functionalities offered by Zenroom,
 then please visit the website linked to above to find out more.
+
+## Installation
+
+The package can be installed by running:
+
+```bash
+$ pip install zenroom
+```
+
+**NOTE - the above command attempts to install the zenroom package, pulling in
+the Zenroom VM as a precompiled binary, so will only work on Linux (amd64)
+machines.**
+
