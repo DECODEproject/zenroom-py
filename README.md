@@ -1,9 +1,9 @@
 # zenroom.py
 
-This library provides a very simple wrapper around the Zenroom
+This library attempts to provide a very simple wrapper around the Zenroom
 (https://zenroom.dyne.org/) crypto virtual machine developed as part of the
-DECODE project (https://decodeproject.eu/), that aims to make the virtual
-machine easier to call from normal Python code.
+DECODE project (https://decodeproject.eu/), that aims to make the Zenroom
+virtual machine easier to call from normal Python code.
 
 This library has been developed for a specific deliverable within the project,
 and as such will likely not be suitable for most people's needs. Here we
