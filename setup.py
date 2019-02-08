@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zenroom",
-    version="0.0.2",
+    version="0.0.4",
     author="Sam Mulube",
     author_email="sam@thingful.net",
     description="Python wrapper for the Zenroom virtual machine",
