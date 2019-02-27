@@ -1,5 +1,7 @@
 import ctypes
 import os.path
+from multiprocessing import Process, Queue
+from capturer import CaptureOutput
 
 zenroom_path = os.path.join(os.path.dirname(__file__), "_zenroom.so")
 
@@ -14,6 +16,27 @@ class Error(Exception):
     """Base class for Zenroom errors."""
 
     pass
+
+
+def _execute(queue, script, keys, data, conf, verbosity):
+    stdout_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
+    stdout_len = ctypes.c_size_t(__MAX_STRING__)
+    stderr_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
+    stderr_len = ctypes.c_size_t(__MAX_STRING__)
+
+    with CaptureOutput() as capturer:
+        _zenroom.zenroom_exec_tobuf(
+            script,
+            conf,
+            keys,
+            data,
+            verbosity,
+            ctypes.byref(stdout_buf),
+            stdout_len,
+            ctypes.byref(stderr_buf),
+            stderr_len,
+        )
+        queue.put_nowait((stdout_buf.value, capturer.get_lines()))
 
 
 def execute(script, keys=None, data=None, conf=None, verbosity=1):
@@ -35,24 +58,23 @@ def execute(script, keys=None, data=None, conf=None, verbosity=1):
     Returns:
             bytes: The output from Zenroom expressed as a byte string
     """
-    stdout_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
-    stdout_len = ctypes.c_size_t(__MAX_STRING__)
-    stderr_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
-    stderr_len = ctypes.c_size_t(__MAX_STRING__)
-
-    err = _zenroom.zenroom_exec_tobuf(
+    result = Queue()
+    args = (
+        result,
         script,
         conf,
         keys,
         data,
         verbosity,
-        ctypes.byref(stdout_buf),
-        stdout_len,
-        ctypes.byref(stderr_buf),
-        stderr_len,
     )
+    with CaptureOutput() as capturer:
+        p = Process(target=_execute, args=args)
+        p.start()
+        p.join()
 
-    if err != 0:
-        raise Error(stderr_buf.value)
+        output = result.get_nowait() if not result.empty() else None
 
-    return stdout_buf.value
+        if not output:
+            raise Error(capturer.get_text())
+
+        return output
