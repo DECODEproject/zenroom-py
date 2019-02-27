@@ -1,9 +1,11 @@
 import ctypes
 import os.path
+import sys
 from multiprocessing import Process, Queue
 from capturer import CaptureOutput
 
-zenroom_path = os.path.join(os.path.dirname(__file__), "_zenroom.so")
+python_version = '_'.join(map(str, sys.version_info[:2]))
+zenroom_path = os.path.join(os.path.dirname(__file__), "_zenroom_%s.so" % python_version)
 
 _zenroom = ctypes.CDLL(zenroom_path)
 

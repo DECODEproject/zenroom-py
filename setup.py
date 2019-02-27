@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/DECODEproject/zenroom-py",
     packages=setuptools.find_packages(),
-    package_data={"zenroom": ["_zenroom.so"]},
+    package_data={"zenroom": ["_zenroom_3_5.so", "_zenroom_3_7.so", "_zenroom_3_6.so"]},
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
     install_requires=["capturer==2.4"]
