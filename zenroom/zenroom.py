@@ -4,7 +4,7 @@ import sys
 from multiprocessing import Process, Queue
 from capturer import CaptureOutput
 
-python_version = '_'.join(map(str, sys.version_info[:2]))
+python_version = '.'.join(map(str, sys.version_info[:3]))
 zenroom_path = os.path.join(os.path.dirname(__file__), "_zenroom_%s.so" % python_version)
 
 _zenroom = ctypes.CDLL(zenroom_path)
@@ -20,14 +20,14 @@ class Error(Exception):
     pass
 
 
-def _execute(queue, script, keys, data, conf, verbosity):
+def _execute(func, queue, script, keys, data, conf, verbosity):
     stdout_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
     stdout_len = ctypes.c_size_t(__MAX_STRING__)
     stderr_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
     stderr_len = ctypes.c_size_t(__MAX_STRING__)
 
     with CaptureOutput() as capturer:
-        _zenroom.zenroom_exec_tobuf(
+        func(
             script,
             conf,
             keys,
@@ -41,27 +41,10 @@ def _execute(queue, script, keys, data, conf, verbosity):
         queue.put_nowait((stdout_buf.value, capturer.get_lines()))
 
 
-def execute(script, keys=None, data=None, conf=None, verbosity=1):
-    """Invoke Zenroom, capturing and returning the output as a byte string
-
-    This function is the primary method we expose from this wrapper library,
-    which attempts to make Zenroom slightly simpler to call from Python. This
-    wrapper has only been developed for a specific pilot project within DECODE,
-    so beware - the code within this wrapper may be doing very bad things that
-    the underlying Zenroom tool does not require.
-
-    Args:
-        script (str): Required byte string containing script which Zenroom will execute
-        keys (str): Optional byte string containing keys which Zenroom will use
-        data (str): Optional byte string containing data upon which Zenroom will operate
-        conf (str): Optional byte string containing conf data for Zenroom
-        verbosity (int): Optional int which controls Zenroom's log verbosity ranging from 1 (least verbose) up to 3 (most verbose)
-
-    Returns:
-            bytes: The output from Zenroom expressed as a byte string
-    """
+def _zen_call(func, script, keys, data, conf, verbosity):
     result = Queue()
     args = (
+        func,
         result,
         script,
         conf,
@@ -80,3 +63,60 @@ def execute(script, keys=None, data=None, conf=None, verbosity=1):
             raise Error(capturer.get_text())
 
         return output
+
+
+def zencode(script, keys=None, data=None, conf=None, verbosity=1):
+
+    """Invoke Zenroom, capturing and returning the output as a byte string
+
+    This function is the primary method we expose from this wrapper library,
+    which attempts to make Zenroom slightly simpler to call from Python. This
+    wrapper has only been developed for a specific pilot project within DECODE,
+    so beware - the code within this wrapper may be doing very bad things that
+    the underlying Zenroom tool does not require.
+
+    Args:
+        script (str): Required byte string containing script which Zenroom will execute
+        keys (str): Optional byte string containing keys which Zenroom will use
+        data (str): Optional byte string containing data upon which Zenroom will operate
+        conf (str): Optional byte string containing conf data for Zenroom
+        verbosity (int): Optional int which controls Zenroom's log verbosity ranging from 1 (least verbose) up to 3 (most verbose)
+
+    Returns:
+            tuple: The output from Zenroom expressed as a byte string, the eventual errors generated as a string
+
+    """
+    return _zen_call(_zenroom.zencode_exec_tobuf,
+                   script,
+                   conf,
+                   keys,
+                   data,
+                   verbosity)
+
+
+def execute(script, keys=None, data=None, conf=None, verbosity=1):
+
+    """Invoke Zenroom, capturing and returning the output as a byte string
+
+    This function is the primary method we expose from this wrapper library,
+    which attempts to make Zenroom slightly simpler to call from Python. This
+    wrapper has only been developed for a specific pilot project within DECODE,
+    so beware - the code within this wrapper may be doing very bad things that
+    the underlying Zenroom tool does not require.
+
+    Args:
+        script (str): Required byte string containing script which Zenroom will execute
+        keys (str): Optional byte string containing keys which Zenroom will use
+        data (str): Optional byte string containing data upon which Zenroom will operate
+        conf (str): Optional byte string containing conf data for Zenroom
+        verbosity (int): Optional int which controls Zenroom's log verbosity ranging from 1 (least verbose) up to 3 (most verbose)
+
+    Returns:
+            bytes: The output from Zenroom expressed as a byte string
+    """
+    return _zen_call(_zenroom.zenroom_exec_tobuf,
+                   script,
+                   conf,
+                   keys,
+                   data,
+                   verbosity)

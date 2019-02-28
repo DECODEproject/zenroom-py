@@ -9,12 +9,47 @@ cryptographic operations may be invoked:
 * ``zenroom_exec`` which takes as input a script, as well as optional keys and
   data fields, and when invoked the output of the script is written to stdout.
 
+* ``zencode_exec`` which takes as input a ZENCODE, as well as optional keys and
+  data fields, and when invoked the output of the ZENCODE is written to stdout.
+
 * ``zenroom_exec_tobuf`` which takes the same basic parameters, but the output
   is written to a buffer provided by the caller.
 
-For use in a library, this secondary function is the one that this library
+* ``zencode_exec_tobuf`` like the later but executes a ZENCODE in place of a 
+  script
+
+For use in a library, these two latests function are the one that this library
 attempts to expose, simplified slightly to expose a more idiomatically
 Pythonic API surface.
+
+Executing a simple zencode
+-------------------------
+
+The library only exposes a single function called ``execute``, which passes
+its input parameters into the Zenroom VM, so to execute a simple script that
+does not require any data or keys, the library can be used simply as follows:
+
+.. code-block:: python
+
+   from zenroom import zenroom
+
+   contract = b'''
+   Scenario 'coconut': Generate credential issuer keypair
+     Given that I am known as 'ci_unique_id'
+     When I create my new issuer keypair
+     Then print all data
+   '''
+
+   output, errors = zenroom.zencode(contract)
+
+   print(output)
+
+This is a trite example obviously, but we wanted to demonstrate the simplest
+possible Zencode script execution, that a caller can capture.
+
+.. important:: Note that the contract value that is passed into the zencode 
+   function must be a byte string. This is also true for any data or keys that
+   are passed into Zenroom.
 
 Executing a simple script
 -------------------------
@@ -29,7 +64,7 @@ does not require any data or keys, the library can be used simply as follows:
 
    script = b'print("Hello world!")'
 
-   output = zenroom.execute(script)
+   output, errors = zenroom.execute(script)
 
    print(output)
 
@@ -94,7 +129,7 @@ with keys and data that must be fed into Zenroom to enable the script.
 
    data = b'{"msg":"top secret"}'
 
-   result = zenroom.execute(script, keys=keys, data=data)
+   result, errors = zenroom.execute(script, keys=keys, data=data)
 
    # Here we'd actually do something with the output
    print(result)
