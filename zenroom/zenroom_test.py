@@ -111,4 +111,14 @@ def test_encrypt_decrypt():
 
 
 def test_zencode():
-    assert True
+    contract = """Scenario 'coconut': $scenario
+Given that I am known as 'MadHatter'
+When I create my new keypair
+Then print all data
+"""
+
+    result, _ = zenroom.zencode(contract)
+    assert result
+    assert 'public' in result
+    assert 'private' in result
+
