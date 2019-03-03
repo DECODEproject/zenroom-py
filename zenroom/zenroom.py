@@ -20,7 +20,7 @@ class Error(Exception):
     pass
 
 
-def _execute(func, queue, script, keys, data, conf, verbosity):
+def _execute(func, queue, script, conf, keys, data, verbosity):
     stdout_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
     stdout_len = ctypes.c_size_t(__MAX_STRING__)
     stderr_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
@@ -41,7 +41,7 @@ def _execute(func, queue, script, keys, data, conf, verbosity):
         queue.put_nowait((stdout_buf.value, capturer.get_lines()))
 
 
-def _zen_call(func, script, keys, data, conf, verbosity):
+def _zen_call(func, script, conf, keys, data, verbosity):
     result = Queue()
     args = (
         func,
