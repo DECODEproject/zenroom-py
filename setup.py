@@ -13,7 +13,7 @@ package_data = [
 
 setuptools.setup(
     name="zenroom",
-    version="0.1.1",
+    version="0.1.2",
     author="Sam Mulube",
     author_email="sam@thingful.net",
     description="Python wrapper for the Zenroom virtual machine",
