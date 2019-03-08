@@ -1,11 +1,17 @@
 import ctypes
 import os.path
+import platform
 import sys
 from multiprocessing import Process, Queue
 from capturer import CaptureOutput
 
 python_version = '.'.join(map(str, sys.version_info[:3]))
 zenroom_path = os.path.join(os.path.dirname(__file__), "_zenroom_%s.so" % python_version)
+
+os_name = platform.uname()[0]
+if os_name == "Darwin":
+    zenroom_path = zenroom_path + ".osx"
+
 
 _zenroom = ctypes.CDLL(zenroom_path)
 
