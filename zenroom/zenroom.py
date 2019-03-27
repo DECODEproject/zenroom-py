@@ -42,6 +42,11 @@ def _execute(func, queue, script, conf, keys, data, verbosity):
 
 
 def _zen_call(func, script, conf, keys, data, verbosity):
+    script = script.encode() if isinstance(script, str) else script
+    conf = conf.encode() if isinstance(conf, str) else conf
+    keys = keys.encode() if isinstance(keys, str) else keys
+    data = data.encode() if isinstance(data, str) else data
+
     result = Queue()
     args = (
         func,
