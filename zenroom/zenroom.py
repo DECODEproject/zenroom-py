@@ -1,7 +1,7 @@
 import ctypes
 import os.path
 import sys
-from _queue import Empty
+from queue import Empty
 from multiprocessing import Process, Queue
 from capturer import CaptureOutput
 
