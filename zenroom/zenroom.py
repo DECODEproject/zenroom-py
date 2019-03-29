@@ -11,7 +11,7 @@ _zenroom = ctypes.CDLL(zenroom_path)
 
 # Module variable - used to set the max size of the buffer when handling
 # zenroom output
-__MAX_STRING__ = 4096
+__MAX_STRING__ = 65536
 
 
 class Error(Exception):
