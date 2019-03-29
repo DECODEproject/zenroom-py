@@ -1,6 +1,7 @@
 import ctypes
 import os.path
 import sys
+from _queue import Empty
 from multiprocessing import Process, Queue
 from capturer import CaptureOutput
 
@@ -26,19 +27,18 @@ def _execute(func, queue, script, conf, keys, data, verbosity):
     stderr_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
     stderr_len = ctypes.c_size_t(__MAX_STRING__)
 
-    with CaptureOutput() as capturer:
-        func(
-            script,
-            conf,
-            keys,
-            data,
-            verbosity,
-            ctypes.byref(stdout_buf),
-            stdout_len,
-            ctypes.byref(stderr_buf),
-            stderr_len,
-        )
-        queue.put_nowait((stdout_buf.value, capturer.get_lines()))
+    func(
+        script,
+        conf,
+        keys,
+        data,
+        verbosity,
+        ctypes.byref(stdout_buf),
+        stdout_len,
+        ctypes.byref(stderr_buf),
+        stderr_len,
+    )
+    queue.put_nowait((stdout_buf.value, stderr_buf.value))
 
 
 def _zen_call(func, script, conf, keys, data, verbosity):
@@ -62,11 +62,15 @@ def _zen_call(func, script, conf, keys, data, verbosity):
         p.start()
         p.join()
 
-        output = result.get_nowait() if not result.empty() else None
+        try:
+            output = result.get_nowait()
+        except Empty:
+            raise Error(capturer.get_text())
 
         if not output:
             raise Error(capturer.get_text())
 
+        p.terminate()
         return output
 
 

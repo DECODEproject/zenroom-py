@@ -1,6 +1,9 @@
 import json
 
+import pytest
+
 from zenroom import zenroom
+from zenroom.zenroom import Error
 
 
 def test_basic():
@@ -43,3 +46,10 @@ Then print all data
     assert b'public' in result
     assert b'private' in result
 
+
+def test_broken_script():
+    with pytest.raises(Error) as e:
+        script = "print('"
+        result, errors = zenroom.execute(script)
+
+    assert e
