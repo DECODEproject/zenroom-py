@@ -27,3 +27,14 @@ $ pip install zenroom
 the Zenroom VM as a precompiled binary, so will only work on Linux (amd64)
 machines.**
 
+## Building a distribution
+
+```bash
+python3 ./setup.py sdist
+```
+
+This will create a zip file in your `dist` dir which you can then install with 
+
+```bash
+pip install /path/to/zipfile
+```
