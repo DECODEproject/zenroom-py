@@ -1,8 +1,10 @@
 import ctypes
 import os.path
 import sys
-from queue import Empty
 from multiprocessing import Process, Queue
+from queue import Empty
+
+
 from capturer import CaptureOutput
 
 python_version = '.'.join(map(str, sys.version_info[:3]))
@@ -17,7 +19,6 @@ __MAX_STRING__ = 1048576
 
 class Error(Exception):
     """Base class for Zenroom errors."""
-
     pass
 
 
@@ -38,7 +39,11 @@ def _execute(func, queue, script, conf, keys, data, verbosity):
         ctypes.byref(stderr_buf),
         stderr_len,
     )
-    queue.put_nowait((stdout_buf.value, stderr_buf.value))
+
+    try:
+        queue.put_nowait((stdout_buf.value, stderr_buf.value))
+    except Empty:
+        raise Error(stderr_buf.value)
 
 
 def _zen_call(func, script, conf, keys, data, verbosity):
@@ -47,31 +52,28 @@ def _zen_call(func, script, conf, keys, data, verbosity):
     keys = keys.encode() if isinstance(keys, str) else keys
     data = data.encode() if isinstance(data, str) else data
 
-    result = Queue()
-    args = (
-        func,
-        result,
-        script,
-        conf,
-        keys,
-        data,
-        verbosity,
-    )
     with CaptureOutput() as capturer:
+        result = Queue()
+        args = (
+            func,
+            result,
+            script,
+            conf,
+            keys,
+            data,
+            verbosity,
+        )
+
         p = Process(target=_execute, args=args)
         p.start()
         p.join()
 
-        try:
-            output = result.get_nowait()
-        except Empty:
-            raise Error(capturer.get_text())
+        if result.empty():
+            capturer.finish_capture()
+            raise Error(capturer.get_lines())
 
-        if not output:
-            raise Error(capturer.get_text())
-
-        p.terminate()
-        return output
+        del p
+        return result.get_nowait()
 
 
 def zencode(script, keys=None, data=None, conf=None, verbosity=1):
@@ -129,3 +131,4 @@ def execute(script, keys=None, data=None, conf=None, verbosity=1):
                    keys,
                    data,
                    verbosity)
+

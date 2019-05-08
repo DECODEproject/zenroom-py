@@ -11,6 +11,7 @@ package_data = [
     "_zenroom_3.7.0.so", "_zenroom_3.7.1.so", "_zenroom_3.7.2.so"
 ]
 
+
 setuptools.setup(
     name="zenroom",
     version="0.2.5",
@@ -24,5 +25,22 @@ setuptools.setup(
     package_data={"zenroom": package_data},
     setup_requires=["pytest-runner"],
     tests_require=["pytest", "codecov", "pytest-cov"],
-    install_requires=["capturer==2.4"]
+    install_requires=["capturer==2.4"],
+    python_requires=">=3.5",
+    project_urls={
+            'Zenroom': 'https://zenroom.dyne.org',
+            'DECODE': 'https://decodeproject.eu',
+    },
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "License :: OSI Approved :: GNU Affero General Public License v3",
+        "Intended Audience :: Developers",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS :: MacOS X",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Topic :: Security"
+      ],
 )
