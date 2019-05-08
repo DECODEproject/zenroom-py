@@ -74,7 +74,7 @@ def test_load_test():
     Then print all data
         """
 
-    for _ in range(1000):
+    for _ in range(90):
         print(f"#{_} CONTRACT")
         result, _ = zenroom.zencode(contract)
         assert b'private' in result
@@ -94,7 +94,7 @@ Then print all data
 ZEN:run()
     """
 
-    for _ in range(1000):
+    for _ in range(90):
         print(f"#{_} CONTRACT")
         result, _ = zenroom.execute(contract)
         assert b'private' in result

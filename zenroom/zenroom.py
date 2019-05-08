@@ -1,5 +1,6 @@
 import ctypes
 import os.path
+import platform
 import sys
 from multiprocessing import Process, Queue
 from queue import Empty
@@ -8,7 +9,8 @@ from queue import Empty
 from capturer import CaptureOutput
 
 python_version = '.'.join(map(str, sys.version_info[:3]))
-zenroom_path = os.path.join(os.path.dirname(__file__), "_zenroom_%s.so" % python_version)
+system = platform.system()
+zenroom_path = os.path.join(os.path.dirname(__file__), "libs", system, "_zenroom_%s.so" % python_version)
 
 _zenroom = ctypes.CDLL(zenroom_path)
 
@@ -67,13 +69,13 @@ def _zen_call(func, script, conf, keys, data, verbosity):
         p = Process(target=_execute, args=args)
         p.start()
         p.join()
+        p.terminate()
 
-        if result.empty():
-            capturer.finish_capture()
-            raise Error(capturer.get_lines())
+    if result.empty():
+        capturer.finish_capture()
+        raise Error(capturer.get_lines())
 
-        del p
-        return result.get_nowait()
+    return result.get_nowait()
 
 
 def zencode(script, keys=None, data=None, conf=None, verbosity=1):
