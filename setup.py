@@ -8,7 +8,7 @@ package_data = [
     "_zenroom_3.5.4.so", "_zenroom_3.5.5.so", "_zenroom_3.5.6.so", "_zenroom_3.6.0.so",
     "_zenroom_3.6.1.so", "_zenroom_3.6.2.so", "_zenroom_3.6.3.so", "_zenroom_3.6.4.so",
     "_zenroom_3.6.5.so", "_zenroom_3.6.6.so", "_zenroom_3.6.7.so", "_zenroom_3.6.8.so",
-    "_zenroom_3.7.0.so", "_zenroom_3.7.0.so.osx", "_zenroom_3.7.1.so", "_zenroom_3.7.2.so"
+    "_zenroom_3.7.0.so", "_zenroom_3.7.0.so.osx", "_zenroom_3.7.3.so.osx", "_zenroom_3.7.1.so", "_zenroom_3.7.2.so"
 ]
 
 setuptools.setup(
