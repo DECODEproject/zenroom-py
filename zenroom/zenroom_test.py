@@ -69,7 +69,7 @@ def test_broken_zencode():
 
 def test_random():
     script = """rng = RNG.new()
-    buf = rng.octet(16)
+    buf = rng:octet(16)
     print(buf)
     """
     result, _ = zenroom.zenroom_exec_rng(script=script, random_seed=bytearray(1024))
@@ -108,6 +108,4 @@ ZEN:run()
         print(f"#{_} CONTRACT")
         result, _ = zenroom.zenroom_exec(contract)
         assert 'private' in result
-
-
 
