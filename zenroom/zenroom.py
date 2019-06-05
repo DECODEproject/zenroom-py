@@ -1,4 +1,4 @@
-from _queue import Empty
+from queue import Empty
 
 from capturer import CaptureOutput
 
