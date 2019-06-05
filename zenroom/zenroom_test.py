@@ -10,7 +10,7 @@ def test_basic():
     script = "print('Hello world')"
     output, errors = zenroom.zenroom_exec(script)
 
-    assert "Hello world" == output
+    assert "Hello world\n" == output
 
 
 def test_keygen():
@@ -57,17 +57,14 @@ def test_broken_script():
 
 
 def test_broken_zencode():
-    with pytest.raises(ZenroomException) as e:
-
-        contract = """Scenario 'coconut': "broken"
-        Given that I am known as '
-        When I create my new keypair
-        Then print all data
-        """
-        result, _ = zenroom.zencode_exec(contract, verbosity=3)
-
-        assert e
-        assert 'zencode_coconut' in e
+    contract = """Scenario 'coconut': "broken"
+    Given that I am known as '
+    When I create my new keypair
+    Then print all data
+    """
+    result, error = zenroom.zencode_exec(contract, verbosity=3)
+    assert error
+    assert "{}\n" == result
 
 
 def test_random():
@@ -75,7 +72,7 @@ def test_random():
     buf = rng.octet(16)
     print(buf)
     """
-    result, _ = zenroom.zenroom_exec_rng(script=script, random_seed=bytearray(b"abcdkpok pok pok pok pok pi09i09i08u097hyiuygiuftytrdyes4575r8uhliuhir86dsuxx"))
+    result, _ = zenroom.zenroom_exec_rng(script=script, random_seed=bytearray(1024))
     print(result)
     assert result
 
