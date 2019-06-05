@@ -5,9 +5,11 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zenroom",
-    version="0.3.0",
+    version="1.0.0",
     author="Sam Mulube",
     author_email="sam@thingful.net",
+    mantainer="Puria Nafisi Azizi",
+    mantainer_email="puria@dyne.org",
     description="Python wrapper for the Zenroom virtual machine",
     long_description=long_description,
     long_description_content_type="text/markdown",

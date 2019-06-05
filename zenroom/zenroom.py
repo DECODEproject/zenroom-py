@@ -1,136 +1,103 @@
-import ctypes
-import os.path
-import platform
-import sys
-from multiprocessing import Process, Queue
-from queue import Empty
-
+from _queue import Empty
 
 from capturer import CaptureOutput
 
-python_version = '.'.join(map(str, sys.version_info[:3]))
-system = platform.system()
-zenroom_path = os.path.join(os.path.dirname(__file__), "libs", system, "_zenroom_%s.so" % python_version)
+from .zenroom_swig import zenroom_exec_tobuf, zencode_exec_tobuf, zencode_exec_rng_tobuf, zenroom_exec_rng_tobuf
+from multiprocessing import Process, Queue
 
-_zenroom = ctypes.CDLL(zenroom_path)
 
-# Module variable - used to set the max size of the buffer when handling
-# zenroom output
 __MAX_STRING__ = 1048576
 
 
-class Error(Exception):
-    """Base class for Zenroom errors."""
+class ZenroomException(Exception):
     pass
 
 
-def _execute(func, queue, script, conf, keys, data, verbosity):
-    stdout_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
-    stdout_len = ctypes.c_size_t(__MAX_STRING__)
-    stderr_buf = ctypes.create_string_buffer(b"\000", __MAX_STRING__)
-    stderr_len = ctypes.c_size_t(__MAX_STRING__)
+def _sanitize_output(out, err):
+    out = out.decode().replace('\x00', '')
+    err = err.decode().replace('\x00', '')
+    return out, err
 
-    func(
-        script,
-        conf,
-        keys,
-        data,
-        verbosity,
-        ctypes.byref(stdout_buf),
-        stdout_len,
-        ctypes.byref(stderr_buf),
-        stderr_len,
-    )
 
+def _execute(func, queue, args):
+    args['stdout_buf'] = bytearray(__MAX_STRING__)
+    args['stderr_buf'] = bytearray(__MAX_STRING__)
+    func(*args.values())
     try:
-        queue.put_nowait((stdout_buf.value, stderr_buf.value))
+        queue.put_nowait(_sanitize_output(args['stdout_buf'], args['stderr_buf']))
     except Empty:
-        raise Error(stderr_buf.value)
+        raise ZenroomException(args['stderr_buf'])
 
 
-def _zen_call(func, script, conf, keys, data, verbosity):
-    script = script.encode() if isinstance(script, str) else script
-    conf = conf.encode() if isinstance(conf, str) else conf
-    keys = keys.encode() if isinstance(keys, str) else keys
-    data = data.encode() if isinstance(data, str) else data
-
+def _zen_call(func, arguments):
     with CaptureOutput() as capturer:
         result = Queue()
-        args = (
-            func,
-            result,
-            script,
-            conf,
-            keys,
-            data,
-            verbosity,
-        )
-
-        p = Process(target=_execute, args=args)
+        p = Process(target=_execute, args=(func, result, arguments))
         p.start()
         p.join()
         p.terminate()
 
     if result.empty():
         capturer.finish_capture()
-        raise Error(capturer.get_lines())
+        raise ZenroomException(capturer.get_lines())
 
     return result.get_nowait()
 
 
-def zencode(script, keys=None, data=None, conf=None, verbosity=1):
+def zencode_exec(script, keys=None, data=None, conf=None, verbosity=1):
 
     """Invoke Zenroom, capturing and returning the output as a byte string
-
     This function is the primary method we expose from this wrapper library,
     which attempts to make Zenroom slightly simpler to call from Python. This
     wrapper has only been developed for a specific pilot project within DECODE,
     so beware - the code within this wrapper may be doing very bad things that
     the underlying Zenroom tool does not require.
-
     Args:
         script (str): Required byte string containing script which Zenroom will execute
         keys (str): Optional byte string containing keys which Zenroom will use
         data (str): Optional byte string containing data upon which Zenroom will operate
         conf (str): Optional byte string containing conf data for Zenroom
         verbosity (int): Optional int which controls Zenroom's log verbosity ranging from 1 (least verbose) up to 3 (most verbose)
-
     Returns:
             tuple: The output from Zenroom expressed as a byte string, the eventual errors generated as a string
-
     """
-    return _zen_call(_zenroom.zencode_exec_tobuf,
-                   script,
-                   conf,
-                   keys,
-                   data,
-                   verbosity)
+    args = dict(script=script, keys=keys, data=data, conf=conf, verbosity=verbosity, stdout_buf=None, stderr_buf=None)
+    return _zen_call(zencode_exec_tobuf, args)
 
 
-def execute(script, keys=None, data=None, conf=None, verbosity=1):
+def zenroom_exec(script, keys=None, data=None, conf=None, verbosity=1):
 
     """Invoke Zenroom, capturing and returning the output as a byte string
-
     This function is the primary method we expose from this wrapper library,
     which attempts to make Zenroom slightly simpler to call from Python. This
     wrapper has only been developed for a specific pilot project within DECODE,
     so beware - the code within this wrapper may be doing very bad things that
     the underlying Zenroom tool does not require.
-
     Args:
         script (str): Required byte string containing script which Zenroom will execute
         keys (str): Optional byte string containing keys which Zenroom will use
         data (str): Optional byte string containing data upon which Zenroom will operate
         conf (str): Optional byte string containing conf data for Zenroom
         verbosity (int): Optional int which controls Zenroom's log verbosity ranging from 1 (least verbose) up to 3 (most verbose)
-
     Returns:
             bytes: The output from Zenroom expressed as a byte string
     """
-    return _zen_call(_zenroom.zenroom_exec_tobuf,
-                   script,
-                   conf,
-                   keys,
-                   data,
-                   verbosity)
+    args = dict(script=script, keys=keys, data=data, conf=conf, verbosity=verbosity, stdout_buf=None, stderr_buf=None)
+    return _zen_call(zenroom_exec_tobuf, args)
 
+
+def zenroom_exec_rng(script, random_seed, keys=None, data=None, conf=None, verbosity=1):
+    args = dict(script=script, keys=keys, data=data, conf=conf, verbosity=verbosity, stdout_buf=None, stderr_buf=None, random_seed=random_seed)
+    return _zen_call(zenroom_exec_rng_tobuf, args)
+
+
+def zencode_exec_rng(script, random_seed, keys=None, data=None, conf=None, verbosity=1):
+    args = dict(script=script,
+                keys=keys,
+                data=data,
+                conf=conf,
+                verbosity=verbosity,
+                stdout_buf=None,
+                stderr_buf=None,
+                random_seed=random_seed)
+    return _zen_call(zencode_exec_rng_tobuf, args)

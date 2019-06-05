@@ -3,14 +3,14 @@ import json
 import pytest
 
 from zenroom import zenroom
-from zenroom.zenroom import Error
+from zenroom.zenroom import ZenroomException
 
 
 def test_basic():
     script = "print('Hello world')"
-    output, errors = zenroom.execute(script)
+    output, errors = zenroom.zenroom_exec(script)
 
-    assert output.decode() == "Hello world"
+    assert "Hello world" == output
 
 
 def test_keygen():
@@ -28,8 +28,8 @@ def test_keygen():
     )
     print(export)
     """
-    output, _ = zenroom.execute(script, verbosity=3)
-    result = json.loads(output.decode())
+    output, _ = zenroom.zenroom_exec(script, verbosity=3)
+    result = json.loads(output)
     assert 'public' in result
     assert 'private' in result
 
@@ -41,30 +41,43 @@ When I create my new keypair
 Then print all data
     """
 
-    result, _ = zenroom.zencode(contract)
+    result, _ = zenroom.zencode_exec(contract)
     assert result
-    assert b'public' in result
-    assert b'private' in result
+    assert 'public' in result
+    assert 'private' in result
 
 
 def test_broken_script():
-    with pytest.raises(Error) as e:
+    with pytest.raises(ZenroomException) as e:
         script = "print('"
-        result, errors = zenroom.execute(script)
+        result, errors = zenroom.zenroom_exec(script)
 
-    assert e
+        assert e
+        assert "line 1" in e
 
 
 def test_broken_zencode():
-    contract = """Scenario 'coconut': "broken"
-    Given that I am known as '
-    When I create my new keypair
-    Then print all data
-    """
-    with pytest.raises(Error) as e:
-        result, _ = zenroom.zencode(contract, verbosity=3)
+    with pytest.raises(ZenroomException) as e:
 
-    assert e
+        contract = """Scenario 'coconut': "broken"
+        Given that I am known as '
+        When I create my new keypair
+        Then print all data
+        """
+        result, _ = zenroom.zencode_exec(contract, verbosity=3)
+
+        assert e
+        assert 'zencode_coconut' in e
+
+
+def test_random():
+    script = """rng = RNG.new()
+    buf = rng.octet(16)
+    print(buf)
+    """
+    result, _ = zenroom.zenroom_exec_rng(script=script, random_seed=bytearray(b"abcdkpok pok pok pok pok pi09i09i08u097hyiuygiuftytrdyes4575r8uhliuhir86dsuxx"))
+    print(result)
+    assert result
 
 
 def test_load_test():
@@ -74,10 +87,10 @@ def test_load_test():
     Then print all data
         """
 
-    for _ in range(90):
+    for _ in range(200):
         print(f"#{_} CONTRACT")
-        result, _ = zenroom.zencode(contract)
-        assert b'private' in result
+        result, _ = zenroom.zencode_exec(contract)
+        assert 'private' in result
 
 
 def test_load_script():
@@ -94,7 +107,10 @@ Then print all data
 ZEN:run()
     """
 
-    for _ in range(90):
+    for _ in range(200):
         print(f"#{_} CONTRACT")
-        result, _ = zenroom.execute(contract)
-        assert b'private' in result
+        result, _ = zenroom.zenroom_exec(contract)
+        assert 'private' in result
+
+
+
