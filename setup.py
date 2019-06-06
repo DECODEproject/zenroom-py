@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zenroom",
-    version="1.0.0",
+    version="1.0.1",
     author="Sam Mulube",
     author_email="sam@thingful.net",
     maintainer="Puria Nafisi Azizi",
@@ -15,7 +15,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/DECODEproject/zenroom-py",
     packages=setuptools.find_packages(),
-    package_data={"zenroom": ["libs/Linux/*", "libs/Darwin/*"]},
+    package_data={"zenroom": ["libs/Linux/**/**", "libs/Darwin/**/**"]},
     setup_requires=["pytest-runner"],
     tests_require=["pytest", "codecov", "pytest-cov"],
     install_requires=["capturer==2.4"],
