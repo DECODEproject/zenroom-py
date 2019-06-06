@@ -23,10 +23,7 @@ def _execute(func, queue, args):
     args['stdout_buf'] = bytearray(__MAX_STRING__)
     args['stderr_buf'] = bytearray(__MAX_STRING__)
     func(*args.values())
-    try:
-        queue.put_nowait(_sanitize_output(args['stdout_buf'], args['stderr_buf']))
-    except Empty:
-        raise ZenroomException(args['stderr_buf'])
+    queue.put_nowait(_sanitize_output(args['stdout_buf'], args['stderr_buf']))
 
 
 def _zen_call(func, arguments):

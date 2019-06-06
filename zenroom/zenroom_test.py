@@ -5,6 +5,8 @@ import pytest
 from zenroom import zenroom
 from zenroom.zenroom import ZenroomException
 
+LOAD_FATIGUE = 100
+
 
 def test_basic():
     script = "print('Hello world')"
@@ -72,9 +74,24 @@ def test_random():
     buf = rng:octet(16)
     print(buf)
     """
-    result, _ = zenroom.zenroom_exec_rng(script=script, random_seed=bytearray(1024))
-    print(result)
-    assert result
+    results = []
+    for _ in range(LOAD_FATIGUE):
+        result, error = zenroom.zenroom_exec_rng(script=script, random_seed=bytearray("", "utf=8"))
+        results.append(result)
+    assert len(set(results)) == len(results)
+
+
+def test_random_zencode():
+    script = """Scenario 'coconut': "test"
+    Given that I am known as 'identifier'
+    When I create my new keypair
+    Then print all data
+    """
+    results = []
+    for _ in range(LOAD_FATIGUE):
+        result, error = zenroom.zencode_exec_rng(script=script, random_seed=bytearray("", "utf=8"))
+        results.append(result)
+    assert len(set(results)) == len(results)
 
 
 def test_load_test():
@@ -84,7 +101,7 @@ def test_load_test():
     Then print all data
         """
 
-    for _ in range(200):
+    for _ in range(LOAD_FATIGUE):
         print(f"#{_} CONTRACT")
         result, _ = zenroom.zencode_exec(contract)
         assert 'private' in result
@@ -104,7 +121,7 @@ Then print all data
 ZEN:run()
     """
 
-    for _ in range(200):
+    for _ in range(LOAD_FATIGUE):
         print(f"#{_} CONTRACT")
         result, _ = zenroom.zenroom_exec(contract)
         assert 'private' in result
