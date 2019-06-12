@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zenroom",
-    version="1.0.1",
+    version="1.0.2",
     author="Sam Mulube",
     author_email="sam@thingful.net",
     maintainer="Puria Nafisi Azizi",
