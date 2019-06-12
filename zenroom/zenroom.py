@@ -14,7 +14,7 @@ class ZenroomException(Exception):
 
 
 def _sanitize_output(out, err):
-    out = out.decode().replace('\x00', '')
+    out = out.decode().replace('\x00', '').strip()
     err = err.decode().replace('\x00', '')
     return out, err
 
@@ -58,7 +58,7 @@ def zencode_exec(script, keys=None, data=None, conf=None, verbosity=1):
     Returns:
             tuple: The output from Zenroom expressed as a byte string, the eventual errors generated as a string
     """
-    args = dict(script=script, keys=keys, data=data, conf=conf, verbosity=verbosity, stdout_buf=None, stderr_buf=None)
+    args = dict(script=script, conf=conf, keys=keys, data=data, verbosity=verbosity, stdout_buf=None, stderr_buf=None)
     return _zen_call(zencode_exec_tobuf, args)
 
 
@@ -79,20 +79,20 @@ def zenroom_exec(script, keys=None, data=None, conf=None, verbosity=1):
     Returns:
             bytes: The output from Zenroom expressed as a byte string
     """
-    args = dict(script=script, keys=keys, data=data, conf=conf, verbosity=verbosity, stdout_buf=None, stderr_buf=None)
+    args = dict(script=script, conf=conf, keys=keys, data=data, verbosity=verbosity, stdout_buf=None, stderr_buf=None)
     return _zen_call(zenroom_exec_tobuf, args)
 
 
 def zenroom_exec_rng(script, random_seed, keys=None, data=None, conf=None, verbosity=1):
-    args = dict(script=script, keys=keys, data=data, conf=conf, verbosity=verbosity, stdout_buf=None, stderr_buf=None, random_seed=random_seed)
+    args = dict(script=script, conf=conf, keys=keys, data=data, verbosity=verbosity, stdout_buf=None, stderr_buf=None, random_seed=random_seed)
     return _zen_call(zenroom_exec_rng_tobuf, args)
 
 
 def zencode_exec_rng(script, random_seed, keys=None, data=None, conf=None, verbosity=1):
     args = dict(script=script,
+                conf=conf,
                 keys=keys,
                 data=data,
-                conf=conf,
                 verbosity=verbosity,
                 stdout_buf=None,
                 stderr_buf=None,
