@@ -5,7 +5,7 @@ import pytest
 from zenroom import zenroom
 from zenroom.zenroom import ZenroomException
 
-LOAD_FATIGUE = 1
+LOAD_FATIGUE = 100
 
 
 def test_basic():
