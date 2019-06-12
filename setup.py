@@ -24,6 +24,11 @@ setuptools.setup(
             'Zenroom': 'https://zenroom.dyne.org',
             'DECODE': 'https://decodeproject.eu',
     },
+    entry_points={
+        "console_scripts": [
+            "zenroom-test = tests.zenroom_cli_test:main",
+        ]
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: GNU Affero General Public License v3",
