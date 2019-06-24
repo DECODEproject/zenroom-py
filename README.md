@@ -8,6 +8,17 @@
   <br>
   <sub>A python wrapper for Zenroom</sub>
 </h1>
+<p align="center">
+  <a href="https://travis-ci.com/DECODEproject/zenroom-py">
+    <img src="https://travis-ci.com/DECODEproject/zenroom-py.svg?branch=master" alt="Build status"/>
+  </a>
+  <a href="https://codecov.io/gh/DECODEproject/zenroom-py">
+    <img src="https://codecov.io/gh/DECODEproject/zenroom-py/branch/master/graph/badge.svg" alt="Code coverage"/>
+  </a>
+  <a href="https://pypi.org/project/zenroom/">
+    <img alt="PyPI" src="https://img.shields.io/pypi/v/zenroom.svg" alt="Latest release">
+  </a>
+</p>
 
 <hr/>
 
