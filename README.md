@@ -109,7 +109,9 @@ Returns
 from zenroom import zenroom
 
 script = "print('Hello world')"
-output, errors = zenroom.execute(script)
+output, errors = zenroom.zenroom_exec(script)
+
+print(output)
 ```
 
 The same arguments and the same result are applied as the `zencode` call.
