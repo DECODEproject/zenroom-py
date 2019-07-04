@@ -85,9 +85,8 @@ When I create my new keypair
 Then print all data
     """
 
-result, errors = zenroom.zencode(contract)
-print(result.decode())
-
+result, errors = zenroom.zencode_exec(contract)
+print(result)
 ```
 
 **NOTE** The result is in `bytes` and not string if you want a string you want to `.decode()` it
