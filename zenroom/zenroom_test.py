@@ -5,7 +5,7 @@ import pytest
 from zenroom import zenroom
 from zenroom.zenroom import ZenroomException
 
-LOAD_FATIGUE = 20
+LOAD_FATIGUE = 200
 
 
 def test_basic():
@@ -53,7 +53,6 @@ def test_broken_script():
     with pytest.raises(ZenroomException) as e:
         script = "print('"
         result, errors = zenroom.zenroom_exec(script)
-
         assert e
         assert "line 1" in e
 

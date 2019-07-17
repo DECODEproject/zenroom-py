@@ -1,10 +1,8 @@
-from queue import Empty
+from multiprocessing import Manager, Process
 
 from capturer import CaptureOutput
 
 from .zenroom_swig import zenroom_exec_tobuf, zencode_exec_tobuf, zencode_exec_rng_tobuf, zenroom_exec_rng_tobuf
-from multiprocessing import Process, Queue
-
 
 __MAX_STRING__ = 1048576
 
@@ -19,26 +17,29 @@ def _sanitize_output(out, err):
     return out, err
 
 
-def _execute(func, queue, args):
+def _execute(func, result, args):
     args['stdout_buf'] = bytearray(__MAX_STRING__)
     args['stderr_buf'] = bytearray(__MAX_STRING__)
     func(*args.values())
-    queue.put_nowait(_sanitize_output(args['stdout_buf'], args['stderr_buf']))
+
+    sanitized_output = _sanitize_output(args['stdout_buf'], args['stderr_buf'])
+    result.put(sanitized_output)
+    result.task_done()
+    if (sanitized_output[1]):
+        print(sanitized_output[1])
 
 
 def _zen_call(func, arguments):
     with CaptureOutput() as capturer:
-        result = Queue()
+        m = Manager()
+        result = m.Queue()
         p = Process(target=_execute, args=(func, result, arguments))
         p.start()
         p.join()
-        p.terminate()
-
     if result.empty():
-        capturer.finish_capture()
         raise ZenroomException(capturer.get_lines())
 
-    return result.get_nowait()
+    return result.get()
 
 
 def zencode_exec(script, keys=None, data=None, conf=None, verbosity=1):
