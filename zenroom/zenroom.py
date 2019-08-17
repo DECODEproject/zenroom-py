@@ -1,3 +1,4 @@
+import logging
 from multiprocessing import Manager, Process
 
 from capturer import CaptureOutput
@@ -26,6 +27,7 @@ def _execute(func, result, args):
     result.put(sanitized_output)
     result.task_done()
     if (sanitized_output[1]):
+        logging.error(sanitized_output[1])
         print(sanitized_output[1])
 
 
