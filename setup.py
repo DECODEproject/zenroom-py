@@ -2,7 +2,7 @@ import setuptools
 import os
 import sys
 
-VERSION = "1.1.0rc0"
+VERSION = "1.1.0rc1"
 
 if sys.argv[-1] == "publish":
     os.system(f"git tag -a {VERSION}")

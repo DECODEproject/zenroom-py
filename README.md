@@ -1,14 +1,14 @@
-<h1 align="center">
-  <br>
-        <a href="https://zenroom.dyne.org/">
-                <img src="https://cdn.jsdelivr.net/gh/DECODEproject/zenroom@master/docs/logo/zenroom.svg" height="140" alt="Zenroom">
-        </a>
-  <br>
-  zenroom.py
-  <br>
-  <sub>A python wrapper for Zenroom</sub>
-</h1>
 <p align="center">
+  <br/>
+  <a href="https://zenroom.dyne.org/">
+    <img src="https://cdn.jsdelivr.net/gh/DECODEproject/zenroom@master/docs/logo/zenroom.svg" height="140" alt="Zenroom">
+  </a>
+  <h1 align="center">
+    zenroom.py 🐍
+    <br>
+    <sub>A python wrapper for Zenroom</sub>
+  </h1>
+
   <a href="https://travis-ci.com/DECODEproject/zenroom-py">
     <img src="https://travis-ci.com/DECODEproject/zenroom-py.svg?branch=master" alt="Build status"/>
   </a>
@@ -40,7 +40,7 @@ then please visit the website linked to above to find out more.
 
 
 <details>
- <summary><strong>:triangular_flag_on_post: Table of Contents</strong> (click to expand)</summary>
+ <summary><strong>🚩 Table of Contents</strong> (click to expand)</summary>
 
 * [Installation](#floppy_disk-installation)
 * [Usage](#video_game-usage)
@@ -50,7 +50,7 @@ then please visit the website linked to above to find out more.
 
 
 ***
-## :floppy_disk: Installation
+## 💾 Installation
 
 ```bash
 pip install zenroom
@@ -62,7 +62,7 @@ machines.
 
 
 ***
-## :video_game: Usage
+## 🎮 Usage
 
 Two main calls are exposed, one to run `zencode` and one for `zenroom scripts`.
 
@@ -117,15 +117,15 @@ print(output)
 The same arguments and the same result are applied as the `zencode` call.
 
 ***
-## :clipboard: Testing
+## 📋 Testing
 
 Tests are made wuth pytests, just run 
 
 `python setup.py test`
 
 ***
-## :globe_with_meridians: Links
+## 🌐 Links
 
 https://decodeproject.eu/
 
-https://zenroom.dyne.org/
+https://zenroom.org/
