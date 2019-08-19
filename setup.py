@@ -11,7 +11,4 @@ if sys.argv[-1] == "publish":
     os.system("twine upload dist/*")
     sys.exit()
 
-setuptools.setup(
-    version=VERSION,
-    entry_points={"console_scripts": ["zenroom-test = tests.zenroom_cli_test:main"]},
-)
+setuptools.setup(version=VERSION)
